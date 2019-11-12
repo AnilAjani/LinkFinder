@@ -1,6 +1,8 @@
 package org.improving;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
+import org.jsoup.UnsupportedMimeTypeException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -23,8 +25,18 @@ public class LinkCounter {
             String l = removeHash(link);
 
             if(l.startsWith("https://improving.com")) {
-                linkSet.add(l);
-                System.out.println(l);
+                if(!linkSet.contains(l)){
+                    linkSet.add(l);
+                    System.out.println(l);
+                    try {
+                        getLinks(l, linkSet);
+                    }catch (HttpStatusException ex){
+                        System.out.println("Status 404");
+                        linkSet.remove(l);
+                    }catch (UnsupportedMimeTypeException ex){
+                        System.out.println("PDF");
+                    }
+                }
             }
         }
         System.out.println("Number of unique links= " + linkSet.size());
